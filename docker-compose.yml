@@ -21,6 +21,7 @@ services:
 
   backend:
     build:
+    image: petsync-backend-fixed
       context: ./back
       no_cache: true
     container_name: petsync_backend
