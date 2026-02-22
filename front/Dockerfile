@@ -1,23 +1,22 @@
-FROM node:22-bookworm-slim
+# Build stage
+FROM node:20-alpine AS build
 
-ENV USERNAME=node
-ENV WORKPATH=/opt/workdir
-ENV USER_ID=1000
-ENV GROUP_ID=1000
+WORKDIR /app
 
-RUN usermod -u ${USER_ID} ${USERNAME}
-RUN usermod -g ${GROUP_ID} ${USERNAME}
-
-WORKDIR ${WORKPATH}
-COPY --chown=${USERNAME}:${USERNAME} package*.json ./
+COPY package*.json ./
 RUN npm install
-RUN npm install -g @angular/cli
 
-COPY --chown=${USERNAME}:${USERNAME} . .
-RUN chown -R ${USER_ID}:${GROUP_ID} ${WORKPATH}
+COPY . .
+RUN npm run build
 
-USER ${USERNAME}
+# Serve stage
+FROM nginx:alpine
 
-EXPOSE 3000
+COPY --from=build /app/dist /usr/share/nginx/html
 
-CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--port", "3000"]
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
