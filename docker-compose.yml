@@ -19,11 +19,11 @@ services:
     networks:
       - petsync_net
 
-  backend:
-    image: petsync-backend-fixed
+   backend:
     build:
       context: ./back
       no_cache: true
+    image: petsync-backend-fixed
     container_name: petsync_backend
     restart: unless-stopped
     depends_on:
