@@ -20,8 +20,8 @@ services:
       - petsync_net
 
   backend:
-    build:
     image: petsync-backend-fixed
+    build:
       context: ./back
       no_cache: true
     container_name: petsync_backend
@@ -61,3 +61,4 @@ volumes:
 networks:
   petsync_net:
     driver: bridge
+
