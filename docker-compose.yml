@@ -21,7 +21,7 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: ./back
     container_name: petsync_backend
     restart: unless-stopped
     depends_on:
@@ -41,7 +41,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ./front
     container_name: petsync_frontend
     restart: unless-stopped
     depends_on:
