@@ -1,23 +1,28 @@
-FROM python:3.13-bookworm
+FROM python:3.13-slim
 
-ARG USER_ID=1000
-ARG GROUP_ID=1000
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-ENV USERNAME servo
-ENV WORKPATH /opt/workdir
-RUN addgroup --gid ${GROUP_ID} $USERNAME
-RUN adduser --uid ${USER_ID} --gid ${GROUP_ID} --disabled-password --gecos '' $USERNAME
-WORKDIR $WORKPATH
+WORKDIR /app
 
-COPY --chown=$USERNAME:$USERNAME requirements.txt $WORKPATH
-RUN pip install -r requirements.txt
+# System dependencies for psycopg2
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    curl \
+ && rm -rf /var/lib/apt/lists/*
 
-RUN chown -R ${USER_ID}:${GROUP_ID} . $WORKPATH
+# Install Python dependencies
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
 
-USER $USERNAME
+# Copy backend source
+COPY . /app/
 
-# ENV DJANGO_SETTINGS_MODULE=core.settings
+# Add entrypoint
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "core.wsgi:application"]
+ENTRYPOINT ["/entrypoint.sh"]
