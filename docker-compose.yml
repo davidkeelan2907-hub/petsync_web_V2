@@ -19,7 +19,7 @@ services:
     networks:
       - petsync_net
 
-   backend:
+  backend:
     build:
       context: ./back
       no_cache: true
@@ -61,4 +61,3 @@ volumes:
 networks:
   petsync_net:
     driver: bridge
-
