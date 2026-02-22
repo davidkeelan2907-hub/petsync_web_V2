@@ -22,6 +22,7 @@ services:
   backend:
     build:
       context: ./back
+      no_cache: true
     container_name: petsync_backend
     restart: unless-stopped
     depends_on:
